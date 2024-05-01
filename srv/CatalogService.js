@@ -20,7 +20,7 @@ module.exports = cds.service.impl(async function(){
                 GROSS_AMOUNT : {'+=' : 20000}
             }).where(ID);
             //Step 3: Commit work
-//            tx.commit();
+            tx.commit();
         } catch (error) {
             tx.rollback();
             return "Error " + error.toString();

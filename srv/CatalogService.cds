@@ -7,8 +7,25 @@ service CatalogService @(path: 'CatalogService') {
    entity AddressSet as projection on master.address;
    entity ProductSet as projection on master.product;
    entity BusinessPartnerSet as projection on master.businesspartner;
-   entity POs as projection on transaction.purchaseorder
+   entity POs @( odata.draft.enabled:true) as projection on transaction.purchaseorder{
+    *,
+    case OVERALL_STATUS
+        when 'N' then 'new'
+        when 'P' then 'Paid'
+        when 'A' then 'Approved'
+        when 'X' then 'rejected'
+        end as overallstatus: String(10),
+    case OVERALL_STATUS
+        when 'N' then 1
+        when 'P' then 3
+        when 'A' then 2
+        when 'X' then 0
+        end as Criticality: Integer
+   }
     actions{
+        @Common.SideEffects:{
+            TargetProperties:['in/GROSS_AMOUNT']
+        }
         action boost() returns POs;
     }
    ;
